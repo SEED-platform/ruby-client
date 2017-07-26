@@ -25,15 +25,6 @@ module Seed
 
     # Set the API key for server
     def api_key(username, key)
-      # auth_string = base64.urlsafe_b64encode(
-      #     '{}:{}'.format(username.lower(), api_key)
-      # )
-      # auth_string = 'Basic {}'.format(auth_string)
-      # header = {
-      #     'Authorization': auth_string,
-      #     "Content-Type": "application/json"
-      # }
-
       @api_header = "Basic #{Base64.strict_encode64("#{username}:#{key}")}"
     end
 
