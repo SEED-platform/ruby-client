@@ -5,7 +5,7 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require 'seed/version'
 
 Gem::Specification.new do |spec|
-  spec.name          = 'seed-ruby-client'
+  spec.name          = 'seed_ruby_client'
   spec.version       = Seed::VERSION
   spec.authors       = ['Nicholas Long']
   spec.email         = ['nicholas.long@nrel.gov']
@@ -34,4 +34,3 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'rake', '~> 10.0'
   spec.add_development_dependency 'rspec', '~> 3.0'
 end
-

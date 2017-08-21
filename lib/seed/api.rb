@@ -3,8 +3,8 @@ module Seed
   class API
     attr_reader :cycle_obj
 
-    def initialize(host, version='v2')
-      @host = "#{host}/api/#{version}"
+    def initialize(host)
+      @host = "#{host}/api"
       @api_header = nil
 
       # read the username and api key from env vars (if set)
@@ -29,17 +29,16 @@ module Seed
     end
 
     def get_user_id
-      response = RestClient.get("#{@host}/users/current_user_id/", authorization: @api_header)
+      response = RestClient.get("#{@host}/v2/users/current_user_id/", authorization: @api_header)
       if response.code == 200
         return JSON.parse(response, symbolize_names: true)[:pk]
       elsif response.code == 500
-        return "ERROR getting current_user_id"
+        return 'ERROR getting current_user_id'
       end
     end
 
-
     def awake?
-      response = RestClient.get("#{@host}/version/", authorization: @api_header)
+      response = RestClient.get("#{@host}/v2/version/", authorization: @api_header)
       if response.code == 200
         return true
       else
@@ -52,7 +51,7 @@ module Seed
 
     def get_or_create_organization(name)
       # check if the organization exists
-      response = RestClient.get("#{@host}/organizations/", authorization: @api_header)
+      response = RestClient.get("#{@host}/v2/organizations/", authorization: @api_header)
       if response.code == 200
         response = JSON.parse(response, symbolize_names: true)
       else
@@ -71,7 +70,7 @@ module Seed
         organization_name: name,
         user_id: @user_id
       }
-      response = RestClient.post("#{@host}/organizations/", body, authorization: @api_header)
+      response = RestClient.post("#{@host}/v2/organizations/", body, authorization: @api_header)
       if response.code == 200 # this should be a 201, seed needs fixed
         response = JSON.parse(response, symbolize_names: true)
         @organization = Organization.from_hash(response[:organization])
@@ -81,14 +80,12 @@ module Seed
       end
     end
 
-    def cycles(bypass_cache=false)
-      if @cache[:cycles] && !bypass_cache
-        return @cache[:cycles]
-      end
+    def cycles(bypass_cache = false)
+      return @cache[:cycles] if @cache[:cycles] && !bypass_cache
 
       @cache[:cycles] = []
       response = RestClient.get(
-        "#{@host}/cycles/?organization_id=#{@organization.id}",
+        "#{@host}/v2/cycles/?organization_id=#{@organization.id}",
         authorization: @api_header
       )
       if response.code == 200
@@ -108,22 +105,20 @@ module Seed
     def create_cycle(name, start_time, end_time)
       # return if cycle already exists
       test_cycle = cycle(name)
-      if test_cycle
-        return test_cycle
-      end
+      return test_cycle if test_cycle
 
       body = {
         name: name,
         start: start_time.strftime('%Y-%m-%d %H:%MZ'),
         end: end_time.strftime('%Y-%m-%d %H:%MZ')
       }
-      response = RestClient.post("#{@host}/cycles/?organization_id=#{@organization.id}",
+      response = RestClient.post("#{@host}/v2/cycles/?organization_id=#{@organization.id}",
                                  body,
                                  authorization: @api_header)
       if response.code == 201
         response = JSON.parse(response, symbolize_names: true)
-        c = Cycle.from_hash(response[:cycles])
-        return c
+        @cycle_obj = Cycle.from_hash(response[:cycles])
+        return @cycle_obj
       else
         return false
       end
@@ -131,9 +126,7 @@ module Seed
 
     # set the cycle
     def cycle(name)
-      if @cache[:cycles].nil? || @cache[:cycles].empty?
-        cycles
-      end
+      cycles if @cache[:cycles].nil? || @cache[:cycles].empty?
 
       @cycle_obj = nil
       @cache[:cycles].each do |cycle|
@@ -155,7 +148,7 @@ module Seed
           file_type: 1,
           multipart: true
         }
-        response = RestClient.post("#{@host}/building_file/",
+        response = RestClient.post("#{@host}/v2/building_file/",
                                    payload.merge(file: File.new(filename, 'rb')),
                                    authorization: @api_header)
 
@@ -165,6 +158,47 @@ module Seed
         else
           return false
         end
+      else
+        false
+      end
+    end
+
+    # Return details about the property in an object
+    def property(property_id)
+      # return if cycle already exists
+      test_cycle = cycle(name)
+      return test_cycle if test_cycle
+
+      body = {
+        name: name,
+        start: start_time.strftime('%Y-%m-%d %H:%MZ'),
+        end: end_time.strftime('%Y-%m-%d %H:%MZ')
+      }
+
+      response = RestClient.get(
+        "#{@host}/v2/properties/#{property_id}/?cycle_id=#{@cycle_obj.id}&organization_id=#{@organization.id}",
+        authorization: @api_header
+      )
+
+      if response.code == 200
+        response = JSON.parse(response, symbolize_names: true)
+        inst = Property.from_hash(response[:cycles])
+        return inst
+      else
+        return false
+      end
+    end
+
+    # Search for a property based on the address_line_1, pm_property_id, custom_id, or jurisdiction_property_id
+    # @param identifier_string, string
+    def search(identifier_string)
+      uri = URI.escape("#{@host}/v2.1/properties/?cycle_id=#{@cycle_obj.id}&organization_id=#{@organization.id}&identifier=#{identifier_string}")
+      response = RestClient.get(uri, authorization: @api_header)
+
+      if response.code == 200
+        response = JSON.parse(response, symbolize_names: true)
+        inst = SearchResults.from_hash(response)
+        return inst
       else
         return false
       end

@@ -18,7 +18,7 @@ Or install it yourself as:
 
 ## Usage
 
-It is recommended that you set your SEED username and password in the environment variables
+It is recommended that you set your SEED username and password in environment variables
 
 ```bash
 export BRICR_SEED_USERNAME=user@domain.com

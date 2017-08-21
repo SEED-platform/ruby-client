@@ -32,7 +32,7 @@ module Seed
     #
     def self.from_hash(hash)
       org = Organization.new
-      vars_to_parse = [:id, :name, :user_is_owner, :cycles]
+      vars_to_parse = %i[id name user_is_owner cycles]
 
       hash.each do |name, value|
         if vars_to_parse.include? name
