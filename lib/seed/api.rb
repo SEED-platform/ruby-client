@@ -192,7 +192,7 @@ module Seed
     # Search for a property based on the address_line_1, pm_property_id, custom_id, or jurisdiction_property_id
     # @param identifier_string, string
     def search(identifier_string)
-      uri = URI.escape("#{@host}/v2.1/properties/?cycle_id=#{@cycle_obj.id}&organization_id=#{@organization.id}&identifier=#{identifier_string}")
+      uri = URI.escape("#{@host}/v2.1/properties/?cycle=#{@cycle_obj.id}&organization_id=#{@organization.id}&identifier=#{identifier_string}")
       response = RestClient.get(uri, authorization: @api_header)
 
       if response.code == 200
