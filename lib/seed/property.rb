@@ -17,5 +17,9 @@ module Seed
 
       property
     end
+
+    def update(new_data)
+      puts "updating property"
+    end
   end
 end
