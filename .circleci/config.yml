@@ -1,0 +1,32 @@
+version: 2
+jobs:
+  build:
+    working_directory: ~/ruby-client
+    docker:
+      - image: circleci/ruby:2.2-node-browsers
+        environment:
+          BRICR_SEED_USERNAME: testuser
+          BRICR_SEED_API_KEY: tbd
+          BRICR_HOST: http://localhost
+    steps:
+      - checkout
+      - restore_cache:
+          key: ruby-client-{{ checksum "Gemfile.lock" }}
+      - run:
+          name: Install dependencies
+          command: |
+            gem install bundler
+            bundle install
+      - save_cache:
+          key: ruby-client-{{ checksum "Gemfile.lock" }}
+          paths:
+            - vendor/bundle
+      - run:
+          name: Start SEED instance
+          command: |
+            docker volume rm seed_pgdata && docker volume create --name=seed_pgdata
+            docker volume rm seed_media && docker volume create --name=seed_media
+            docker-compose -f ./spec/files/seed-docker-compose.yml up -d
+      - run: rake
+      - run: docker-compose stop
+
