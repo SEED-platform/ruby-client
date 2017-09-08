@@ -12,7 +12,8 @@ RSpec.describe Seed do
   describe 'API Status' do
     before :example do
       # @r = Seed::API.new("https://seed-platform.org")
-      @r = Seed::API.new('http://localhost:8000')
+      host = ENV["BRICR_HOST"] || 'http://localhost:8000'
+      @r = Seed::API.new(host)
     end
 
     it 'should get a status response' do

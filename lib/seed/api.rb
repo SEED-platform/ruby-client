@@ -203,5 +203,10 @@ module Seed
         return false
       end
     end
+
+    # update the property
+    def update_property_by_buildingfile(property_id, filename)
+      #
+    end
   end
 end
