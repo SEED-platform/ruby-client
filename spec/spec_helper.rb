@@ -13,9 +13,9 @@ RSpec.configure do |config|
   end
 
   # check if there is a seed.json file that has the user credentials
-  if File.exist? '../seed.json'
+  if File.exist? 'seed.json'
     puts "Found seed.json which contains the SEED user credentials, overriding environment variables"
-    j = JSON.parse(File.read('../seed.json'), symbolize_names: true)
+    j = JSON.parse(File.read('seed.json'), symbolize_names: true)
     ENV['BRICR_SEED_HOST'] = j[:host]
     ENV['BRICR_SEED_USERNAME'] = j[:username]
     ENV['BRICR_SEED_API_KEY'] = j[:api_key]
