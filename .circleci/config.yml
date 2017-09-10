@@ -4,10 +4,6 @@ jobs:
     working_directory: ~/ruby-client
     docker:
       - image: circleci/ruby:2.2
-        environment:
-          BRICR_SEED_USERNAME: testuser
-          BRICR_SEED_API_KEY: tbd
-          BRICR_HOST: http://localhost
     steps:
       - checkout
       - setup_remote_docker
@@ -29,6 +25,7 @@ jobs:
             docker volume create --name=seed_pgdata
             docker volume create --name=seed_media
             docker-compose -f ./spec/files/seed-docker-compose.yml up -d
+            docker-compose -f ./spec/files/seed-docker-compose.yml run web ./manage.py create_test_user_json --username user@seed-platform.org > seed.json
       - run: rake
       - run: docker-compose stop
 

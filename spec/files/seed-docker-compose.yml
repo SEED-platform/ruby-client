@@ -26,7 +26,7 @@ services:
       - POSTGRES_DB=seed
       - POSTGRES_USER=seed
       - POSTGRES_PASSWORD=password
-      - SEED_ADMIN_USER=testuser
+      - SEED_ADMIN_USER=user@seed-platform.org
       - SEED_ADMIN_PASSWORD=password
       - SEED_ADMIN_ORG=testorg
       - SECRET_KEY=abcdefghijklmnopqrstuvwxyz

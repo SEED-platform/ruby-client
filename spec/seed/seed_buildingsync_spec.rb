@@ -6,7 +6,7 @@ RSpec.describe Seed do
   describe 'BuildingSync' do
     before :example do
       # @r = Seed::API.new("https://seed-platform.org")
-      host = ENV["BRICR_HOST"] || 'http://localhost:8000'
+      host = ENV["BRICR_SEED_HOST"] || 'http://localhost:8000'
       @r = Seed::API.new(host)
       @r.get_or_create_organization('Cycle Test')
       @r.create_cycle('models 01', DateTime.parse('2010-01-01'), DateTime.parse('2010-12-31'))
