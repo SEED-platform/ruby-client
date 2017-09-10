@@ -23,10 +23,11 @@ jobs:
           command: |
             docker volume create --name=seed_pgdata
             docker volume create --name=seed_media
+            docker-compose -f ./spec/files/seed-docker-compose.yml pull
             docker-compose -f ./spec/files/seed-docker-compose.yml up -d
             sleep 180 # wait until the server is up and running
-            curl localhost
-            docker-compose -f ./spec/files/seed-docker-compose.yml run web ./manage.py create_test_user_json --username user@seed-platform.org --host http://localhost > seed.json
+            curl localhost:8080
+            docker-compose -f ./spec/files/seed-docker-compose.yml run web ./manage.py create_test_user_json --username user@seed-platform.org --host http://localhost:8080 > seed.json
       - run: rake
       - run: docker-compose stop
 
