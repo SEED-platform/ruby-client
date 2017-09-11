@@ -23,6 +23,7 @@ Or install it yourself as:
 It is recommended that you set your SEED username and password in environment variables
 
 ```bash
+export BRICR_SEED_HOST=http://localhost:8000
 export BRICR_SEED_USERNAME=user@domain.com
 export BRICR_SEED_API_KEY=super-secret-key
 ```
