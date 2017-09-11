@@ -4,6 +4,7 @@ jobs:
     working_directory: ~/ruby-client
     docker:
       - image: circleci/ruby:2.2
+    executorType: machine
     steps:
       - checkout
       - setup_remote_docker
