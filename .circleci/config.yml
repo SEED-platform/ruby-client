@@ -20,7 +20,7 @@ jobs:
             # to the remote_docker containers
             docker-compose -f ./spec/docker/seed-docker-compose.yml run test_container curl --retry 18 --retry-delay 10 -v http://web:80
             docker-compose -f ./spec/docker/seed-docker-compose.yml run web ./manage.py create_test_user_json --username user@seed-platform.org --host http://web > seed.json
-      - run: docker-compose -f ./spec/docker/seed-docker-compose.yml run test_container source /app/spec/docker/run_tests.sh
+      - run: docker-compose -f ./spec/docker/seed-docker-compose.yml run test_container /app/spec/docker/run_tests.sh
       - run: docker-compose stop
       #      - save_cache:
       #          key: ruby-client-{{ checksum "Gemfile.lock" }}
