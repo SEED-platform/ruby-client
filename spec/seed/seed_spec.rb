@@ -16,9 +16,9 @@ RSpec.describe Seed do
       @r = Seed::API.new(host)
     end
 
-    # Not working right now, needs to be authenticated.
-    # I imagine that something is wrong with the API side in seed with not parsing the API information correctly.
-    # it 'should get a status response' do
+    # Not working right now. Since the method in SEED uses git to read the current version, and
+    # .git is not in the docker container--this isn't going to work. Need new API endpoint for
+    # awakeness and/or version
     #   expect(@r.awake?).to be true
     # end
 

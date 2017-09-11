@@ -54,11 +54,11 @@ services:
     volumes:
       - seed_media:/seed/media
   test_container:
-    image: circleci/ruby:2.2
+    build:
+      context: ../..
+      dockerfile: spec/docker/Dockerfile
     links:
       - web
-    volumes:
-      - ../../:/app
 volumes:
   seed_pgdata:
     external: true
