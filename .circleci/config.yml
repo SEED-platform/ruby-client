@@ -4,31 +4,27 @@ jobs:
     working_directory: ~/ruby-client
     docker:
       - image: circleci/ruby:2.2
-    executorType: machine
     steps:
       - checkout
       - setup_remote_docker
 #      - restore_cache:
 #          key: ruby-client-{{ checksum "Gemfile.lock" }}
       - run:
-          name: Install dependencies
-          command: |
-            gem install bundler
-            bundle install
-#      - save_cache:
-#          key: ruby-client-{{ checksum "Gemfile.lock" }}
-#          paths:
-#            - vendor/bundle
-      - run:
-          name: Start SEED instance
+          name: Start SEED instance and get seed.json
           command: |
             docker volume create --name=seed_pgdata
             docker volume create --name=seed_media
-            docker-compose -f ./spec/files/seed-docker-compose.yml pull
-            docker-compose -f ./spec/files/seed-docker-compose.yml up -d
-            # use the wait for it script to check when the server is up-and-running
-            ./spec/files/wait-for-it.sh --strict -t 180 127.0.0.1:8080
-            docker-compose -f ./spec/files/seed-docker-compose.yml run web ./manage.py create_test_user_json --username user@seed-platform.org --host http://127.0.0.1:8080 > seed.json
-      - run: rake
+            docker-compose -f ./spec/docker/seed-docker-compose.yml pull
+            docker-compose -f ./spec/docker/seed-docker-compose.yml up -d
+            # Run the tests (and support scripts) in another container because the root container does not have access
+            # to the remote_docker containers
+            docker-compose -f ./spec/docker/seed-docker-compose.yml run test_container curl --retry 18 --retry-delay 10 -v http://web:80
+            docker-compose -f ./spec/docker/seed-docker-compose.yml run web ./manage.py create_test_user_json --username user@seed-platform.org --host http://web > seed.json
+      - run: docker-compose -f ./spec/docker/seed-docker-compose.yml run test_container source /app/spec/docker/run_tests.sh
       - run: docker-compose stop
+      #      - save_cache:
+      #          key: ruby-client-{{ checksum "Gemfile.lock" }}
+      #          paths:
+      #            - vendor/bundle
+
 

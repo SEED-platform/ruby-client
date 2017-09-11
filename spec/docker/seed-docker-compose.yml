@@ -37,7 +37,7 @@ services:
     volumes:
       - seed_media:/seed/media
     ports:
-      - "8080:80"
+      - "80:80"
   web-celery:
     command: /seed/docker/start_celery_docker.sh
     image: seedplatform/seed:bricr
@@ -53,6 +53,12 @@ services:
       - web
     volumes:
       - seed_media:/seed/media
+  test_container:
+    image: circleci/ruby:2.2
+    links:
+      - web
+    volumes:
+      - ../../:/app
 volumes:
   seed_pgdata:
     external: true
