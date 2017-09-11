@@ -1,5 +1,7 @@
 # SEED Ruby Client
 
+[![CircleCI](https://circleci.com/gh/SEED-platform/ruby-client.svg?style=svg)](https://circleci.com/gh/SEED-platform/ruby-client)
+
 ## Installation
 
 Add this line to your application's Gemfile:
