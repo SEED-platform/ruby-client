@@ -12,7 +12,7 @@ RSpec.describe Seed do
   describe 'API Status' do
     before :example do
       # @r = Seed::API.new("https://seed-platform.org")
-      host = ENV["BRICR_SEED_HOST"] || 'http://localhost:8000'
+      host = ENV['BRICR_SEED_HOST'] || 'http://localhost:8000'
       @r = Seed::API.new(host)
     end
 
@@ -71,7 +71,7 @@ RSpec.describe Seed do
       @r.create_cycle('models 01', DateTime.parse('2010-01-01'), DateTime.parse('2010-12-31'))
       filename = File.expand_path('../files/not_a_real_file.xml', File.dirname(__FILE__))
       file = @r.upload_buildingsync(filename)
-      expect(file).to eq false
+      expect(file).to eq [false, "Could not find file to upload: #{filename}"]
     end
   end
 end

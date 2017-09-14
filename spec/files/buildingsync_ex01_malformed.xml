@@ -24,7 +24,7 @@
         <auc:WeatherStationName>USA_CA_San.Francisco.Intl.AP</auc:WeatherStationName>
         <auc:Longitude>-122.42768558472727</auc:Longitude>
         <auc:Latitude>37.76937674999205</auc:Latitude>
-        <auc:Facilities>
+        <auc:FacilitiesWITHANINCORRECTELEMENT>
           <auc:Facility ID="Building151">
             <auc:PremisesName>Building 151</auc:PremisesName>
             <auc:PremisesIdentifiers>
@@ -57,7 +57,7 @@
             <auc:YearOfConstruction>1954</auc:YearOfConstruction>
             <auc:YearOfLastMajorRemodel>2003</auc:YearOfLastMajorRemodel>
           </auc:Facility>
-        </auc:Facilities>
+        </auc:FacilitiesWITHANINCORRECTELEMENT>
       </auc:Site>
     </auc:Sites>
     <auc:Measures>

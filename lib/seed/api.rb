@@ -140,6 +140,7 @@ module Seed
     end
 
     # upload a buildingsync file
+    # returns status and response information
     def upload_buildingsync(filename)
       if File.exist? filename
         payload = {
@@ -148,18 +149,18 @@ module Seed
           file_type: 1,
           multipart: true
         }
-        response = RestClient.post("#{@host}/v2/building_file/",
-                                   payload.merge(file: File.new(filename, 'rb')),
-                                   authorization: @api_header)
-
-        if response.code == 200
-          response = JSON.parse(response, symbolize_names: true)
-          return response
-        else
-          return false
+        RestClient.post("#{@host}/v2/building_file/", payload.merge(file: File.new(filename, 'rb')),
+                        authorization: @api_header) do |response, _request, result|
+          if result.code.to_i == 200
+            response = JSON.parse(response, symbolize_names: true)
+            return true, response
+          else
+            response = JSON.parse(response, symbolize_names: true)
+            return false, response
+          end
         end
       else
-        false
+        [false, "Could not find file to upload: #{filename}"]
       end
     end
 
@@ -182,8 +183,7 @@ module Seed
 
       if response.code == 200
         response = JSON.parse(response, symbolize_names: true)
-        inst = Property.from_hash(response[:cycles])
-        return inst
+        return Property.from_hash(response[:cycles])
       else
         return false
       end
@@ -191,22 +191,53 @@ module Seed
 
     # Search for a property based on the address_line_1, pm_property_id, custom_id, or jurisdiction_property_id
     # @param identifier_string, string
-    def search(identifier_string)
-      uri = URI.escape("#{@host}/v2.1/properties/?cycle=#{@cycle_obj.id}&organization_id=#{@organization.id}&identifier=#{identifier_string}")
+    # @param analysis_state, string, state of the analysis to return (Not Started, Started, Completed, Failed)
+    def search(identifier_string, analysis_state)
+      uri = URI.escape("#{@host}/v2.1/properties/?cycle=#{@cycle_obj.id}&organization_id=#{@organization.id}&identifier=#{identifier_string}&analysis_state=#{analysis_state}")
       response = RestClient.get(uri, authorization: @api_header)
 
       if response.code == 200
         response = JSON.parse(response, symbolize_names: true)
-        inst = SearchResults.from_hash(response)
-        return inst
+        return SearchResults.from_hash(response)
       else
         return false
       end
     end
 
     # update the property
-    def update_property_by_buildingfile(property_id, filename)
-      #
+    def update_property_by_buildingfile(property_id, filename, analysis_state = nil)
+      payload = {
+        multipart: true
+      }
+      payload[:analysis_state] = analysis_state if analysis_state
+
+      uri = URI.escape("#{@host}/v2.1/properties/#{property_id}/buildingsync/?cycle_id=#{@cycle_obj.id}&organization_id=#{@organization.id}")
+      response = RestClient.put(uri, payload.merge(file: File.new(filename, 'rb'), authorization: @api_header))
+
+      if response.code == 200
+        response = JSON.parse(response, symbolize_names: true)
+        return Property.from_hash(response[:cycles])
+
+      else
+        return false
+      end
+    end
+
+    def update_analysis_state(property_id, analysis_state)
+      payload = {
+        analysis_state: analysis_state
+      }
+      # right now I think v2 works with this method. But it will delete all the measures, because I haven't
+      # fixed that yet... ugh.
+      uri = URI.escape("#{@host}/v2/properties/#{property_id}/?cycle_id=#{@cycle_obj.id}&organization_id=#{@organization.id}")
+      response = RestClient.put(uri, payload.merge(file: File.new(filename, 'rb'), authorization: @api_header))
+      if response.code == 200
+        response = JSON.parse(response, symbolize_names: true)
+        return Property.from_hash(response[:cycles])
+
+      else
+        return false
+      end
     end
   end
 end
