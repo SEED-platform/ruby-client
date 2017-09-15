@@ -189,10 +189,43 @@ module Seed
       end
     end
 
+    def delete_property_state(property_id)
+      RestClient.delete(
+        "#{@host}/v2/properties/#{property_id}/?cycle_id=#{@cycle_obj.id}&organization_id=#{@organization.id}",
+        authorization: @api_header
+      ) do |_response, _request, result|
+        if result.code.to_i == 200
+          return true
+        else
+          return false
+        end
+      end
+    end
+
+    def list_buildingsync_files(property_id)
+      RestClient.get(
+        "#{@host}/v2/properties/#{property_id}/?cycle_id=#{@cycle_obj.id}&organization_id=#{@organization.id}",
+        authorization: @api_header
+      ) do |response, _request, result|
+        if result.code.to_i == 200
+          response = JSON.parse(response, symbolize_names: true)
+          if response[:state] && response[:state][:files]
+            return response[:state][:files]
+          else
+            return []
+          end
+        else
+          return []
+        end
+      end
+    end
+
     # Search for a property based on the address_line_1, pm_property_id, custom_id, or jurisdiction_property_id
     # @param identifier_string, string
     # @param analysis_state, string, state of the analysis to return (Not Started, Started, Completed, Failed)
     def search(identifier_string, analysis_state)
+      identifier_string = '' if identifier_string.nil?
+      analysis_state = '' if analysis_state.nil?
       uri = URI.escape("#{@host}/v2.1/properties/?cycle=#{@cycle_obj.id}&organization_id=#{@organization.id}&identifier=#{identifier_string}&analysis_state=#{analysis_state}")
       response = RestClient.get(uri, authorization: @api_header)
 
@@ -223,6 +256,8 @@ module Seed
       end
     end
 
+    # This will probably not work exactly right currently. The PUT method will probably create a new State, but
+    # will not copy over all the existing measures, scenarios, etc. #TODO: Need to adddress this
     def update_analysis_state(property_id, analysis_state)
       payload = {
         analysis_state: analysis_state

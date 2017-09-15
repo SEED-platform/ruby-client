@@ -16,10 +16,9 @@ RSpec.describe Seed do
       filename = File.expand_path('../files/buildingsync_ex01.xml', File.dirname(__FILE__))
       response = @r.upload_buildingsync(filename)
 
-      puts response
       expect(response[0]).to eq true
       expect(response[1][:status]).to eq 'success'
-      expect(response[1][:data][:property_state][:gross_floor_area]).to eq 69_452.0
+      expect(response[1][:data][:property_view][:state][:gross_floor_area]).to eq 69_452.0
     end
 
     it 'should fail on a malformed buildingsync file' do
@@ -30,6 +29,30 @@ RSpec.describe Seed do
       expect(response[1][:status]).to eq 'error'
       expect(response[1][:message]).to include "'Could not find required value for sub-lookup of IdentifierCustomName:Custom ID'"
       expect(response[1][:message]).to include "Could not find required value for 'Audits.Audit.Sites.Site.Facilities.Facility.FloorsBelowGrade'"
+    end
+
+    it 'should list buildingsync files on property' do
+      # first upload buildingsync file
+      filename = File.expand_path('../files/buildingsync_ex01.xml', File.dirname(__FILE__))
+      response = @r.upload_buildingsync(filename)
+      expect(response[0]).to eq true
+      expect(response[1][:status]).to eq 'success'
+
+      property_id = response[1][:data][:property_view][:id]
+      files = @r.list_buildingsync_files(property_id)
+      expect(files.size).to eq 1
+      expect(files[0][:filename]).to eq 'buildingsync_ex01.xml'
+    end
+
+    it 'should delete a buildingsync file' do
+      # first upload buildingsync file
+      filename = File.expand_path('../files/buildingsync_ex01.xml', File.dirname(__FILE__))
+      response = @r.upload_buildingsync(filename)
+      expect(response[0]).to eq true
+      expect(response[1][:status]).to eq 'success'
+
+      property_id = response[1][:data][:property_view][:id]
+      @r.delete_property_state(property_id)
     end
 
     it 'should search for the uploaded file' do
