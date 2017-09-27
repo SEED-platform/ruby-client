@@ -153,7 +153,7 @@ module Seed
         RestClient.post("#{@host}/v2/building_file/", payload.merge(file: File.new(filename, 'rb')),
                         authorization: @api_header) do |response, _request, result|
           if result.code.to_i == 404
-            puts "Could not find endpoint"
+            raise "Could not find endpoint"
           elsif result.code.to_i == 200
             response = JSON.parse(response, symbolize_names: true)
             return true, response
