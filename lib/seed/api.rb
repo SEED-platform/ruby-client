@@ -112,15 +112,15 @@ module Seed
         start: start_time.strftime('%Y-%m-%d %H:%MZ'),
         end: end_time.strftime('%Y-%m-%d %H:%MZ')
       }
-      response = RestClient.post("#{@host}/v2/cycles/?organization_id=#{@organization.id}",
-                                 body,
-                                 authorization: @api_header)
-      if response.code == 201
-        response = JSON.parse(response, symbolize_names: true)
-        @cycle_obj = Cycle.from_hash(response[:cycles])
-        return @cycle_obj
-      else
-        return false
+      RestClient.post("#{@host}/v2/cycles/?organization_id=#{@organization.id}", body,
+                                 authorization: @api_header) do |response, request, result|
+        if result.code == 201
+          response = JSON.parse(response, symbolize_names: true)
+          @cycle_obj = Cycle.from_hash(response[:cycles])
+          return @cycle_obj
+        else
+          return false
+        end
       end
     end
 
@@ -149,9 +149,12 @@ module Seed
           file_type: 1,
           multipart: true
         }
+
         RestClient.post("#{@host}/v2/building_file/", payload.merge(file: File.new(filename, 'rb')),
                         authorization: @api_header) do |response, _request, result|
-          if result.code.to_i == 200
+          if result.code.to_i == 404
+            puts "Could not find endpoint"
+          elsif result.code.to_i == 200
             response = JSON.parse(response, symbolize_names: true)
             return true, response
           else

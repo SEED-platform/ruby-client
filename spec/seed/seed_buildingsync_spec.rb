@@ -71,6 +71,10 @@ RSpec.describe Seed do
 
       # verify that a property results can be made a property object
       property_state = Seed::Property.from_hash(search_results.properties.first[:state])
+
+      # test searching by analysis_state
+      search_results = @r.search(nil, 'Not Started')
+      puts search_results.properties
     end
   end
 end
