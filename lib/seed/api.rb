@@ -268,11 +268,10 @@ module Seed
       # right now I think v2 works with this method. But it will delete all the measures, because I haven't
       # fixed that yet... ugh.
       uri = URI.escape("#{@host}/v2/properties/#{property_id}/?cycle_id=#{@cycle_obj.id}&organization_id=#{@organization.id}")
-      response = RestClient.put(uri, payload.merge(file: File.new(filename, 'rb'), authorization: @api_header))
+      response = RestClient.put(uri, payload, authorization: @api_header))
       if response.code == 200
         response = JSON.parse(response, symbolize_names: true)
         return Property.from_hash(response[:cycles])
-
       else
         return false
       end
