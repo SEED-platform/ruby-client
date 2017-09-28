@@ -226,10 +226,10 @@ module Seed
     # Search for a property based on the address_line_1, pm_property_id, custom_id, or jurisdiction_property_id
     # @param identifier_string, string
     # @param analysis_state, string, state of the analysis to return (Not Started, Started, Completed, Failed)
-    def search(identifier_string, analysis_state)
+    def search(identifier_string, analysis_state, per_page=25)
       identifier_string = '' if identifier_string.nil?
       analysis_state = '' if analysis_state.nil?
-      uri = URI.escape("#{@host}/v2.1/properties/?cycle=#{@cycle_obj.id}&organization_id=#{@organization.id}&identifier=#{identifier_string}&analysis_state=#{analysis_state}")
+      uri = URI.escape("#{@host}/v2.1/properties/?cycle=#{@cycle_obj.id}&organization_id=#{@organization.id}&identifier=#{identifier_string}&analysis_state=#{analysis_state}&per_page=#{per_page}")
       response = RestClient.get(uri, authorization: @api_header)
 
       if response.code == 200
