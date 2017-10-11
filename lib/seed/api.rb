@@ -114,7 +114,7 @@ module Seed
       }
       RestClient.post("#{@host}/v2/cycles/?organization_id=#{@organization.id}", body,
                                  authorization: @api_header) do |response, request, result|
-        if result.code == 201
+        if result.code.to_i == 201
           response = JSON.parse(response, symbolize_names: true)
           @cycle_obj = Cycle.from_hash(response[:cycles])
           return @cycle_obj
