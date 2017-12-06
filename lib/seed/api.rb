@@ -243,19 +243,19 @@ module Seed
     # update the property
     def update_property_by_buildingfile(property_id, filename, analysis_state = nil)
       payload = {
-        multipart: true
+        multipart: true,
+        state: {}
       }
-      payload[:analysis_state] = analysis_state if analysis_state
+      payload[:state][:analysis_state] = analysis_state if analysis_state
 
-      uri = URI.escape("#{@host}/v2.1/properties/#{property_id}/buildingsync/?cycle_id=#{@cycle_obj.id}&organization_id=#{@organization.id}")
-      response = RestClient.put(uri, payload.merge(file: File.new(filename, 'rb'), authorization: @api_header))
-
-      if response.code == 200
-        response = JSON.parse(response, symbolize_names: true)
-        return Property.from_hash(response[:cycles])
-
-      else
-        return false
+      uri = URI.escape("#{@host}/v2.1/properties/#{property_id}/update_with_building_sync/?cycle_id=#{@cycle_obj.id}&organization_id=#{@organization.id}")
+      RestClient.put(uri, payload.merge(file: File.new(filename, 'rb'), authorization: @api_header)) do |response, _request, result|
+        if result.code.to_i == 200
+          response = JSON.parse(response, symbolize_names: true)
+          return Property.from_hash(response[:state])
+        else
+          return false, response
+        end
       end
     end
 
@@ -263,17 +263,20 @@ module Seed
     # will not copy over all the existing measures, scenarios, etc. #TODO: Need to adddress this
     def update_analysis_state(property_id, analysis_state)
       payload = {
-        analysis_state: analysis_state
+          state: {
+              analysis_state: analysis_state
+          }
       }
-      # right now I think v2 works with this method. But it will delete all the measures, because I haven't
-      # fixed that yet... ugh.
       uri = URI.escape("#{@host}/v2.1/properties/#{property_id}/?cycle_id=#{@cycle_obj.id}&organization_id=#{@organization.id}")
-      response = RestClient.put(uri, payload, authorization: @api_header)
-      if response.code == 200
-        response = JSON.parse(response, symbolize_names: true)
-        return Property.from_hash(response[:cycles])
-      else
-        return false
+      RestClient.put(uri, payload.to_json, authorization: @api_header, content_type: :json) do |response, _request, result|
+        if result.code.to_i == 200
+          response = JSON.parse(response, symbolize_names: true)
+          return Property.from_hash(response[:state])
+        elsif result.code.to_i == 422
+          return false, response
+        else
+          return false, response
+        end
       end
     end
   end
