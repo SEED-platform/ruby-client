@@ -113,7 +113,7 @@ module Seed
         end: end_time.strftime('%Y-%m-%d %H:%MZ')
       }
       RestClient.post("#{@host}/v2/cycles/?organization_id=#{@organization.id}", body,
-                                 authorization: @api_header) do |response, request, result|
+                      authorization: @api_header) do |response, _request, result|
         if result.code.to_i == 201
           response = JSON.parse(response, symbolize_names: true)
           @cycle_obj = Cycle.from_hash(response[:cycles])
@@ -153,7 +153,7 @@ module Seed
         RestClient.post("#{@host}/v2/building_file/", payload.merge(file: File.new(filename, 'rb')),
                         authorization: @api_header) do |response, _request, result|
           if result.code.to_i == 404
-            raise "Could not find endpoint"
+            raise 'Could not find endpoint'
           elsif result.code.to_i == 200
             response = JSON.parse(response, symbolize_names: true)
             return true, response
@@ -226,10 +226,10 @@ module Seed
     # Search for a property based on the address_line_1, pm_property_id, custom_id, or jurisdiction_property_id
     # @param identifier_string, string
     # @param analysis_state, string, state of the analysis to return (Not Started, Started, Completed, Failed)
-    def search(identifier_string, analysis_state, per_page=25)
+    def search(identifier_string, analysis_state, per_page = 25)
       identifier_string = '' if identifier_string.nil?
       analysis_state = '' if analysis_state.nil?
-      uri = URI.escape("#{@host}/v2.1/properties/?cycle=#{@cycle_obj.id}&organization_id=#{@organization.id}&identifier=#{identifier_string}&analysis_state=#{analysis_state}&per_page=#{per_page}")
+      uri = URI.escape("#{@host}/v2/properties/?cycle=#{@cycle_obj.id}&organization_id=#{@organization.id}&identifier=#{identifier_string}&analysis_state=#{analysis_state}&per_page=#{per_page}")
       response = RestClient.get(uri, authorization: @api_header)
 
       if response.code == 200
@@ -244,15 +244,16 @@ module Seed
     def update_property_by_buildingfile(property_id, filename, analysis_state = nil)
       payload = {
         multipart: true,
+        file_type: 1,
         state: {}
       }
       payload[:state][:analysis_state] = analysis_state if analysis_state
 
       uri = URI.escape("#{@host}/v2.1/properties/#{property_id}/update_with_building_sync/?cycle_id=#{@cycle_obj.id}&organization_id=#{@organization.id}")
-      RestClient.put(uri, payload.merge(file: File.new(filename, 'rb'), authorization: @api_header)) do |response, _request, result|
+      RestClient.put(uri, payload.merge(file: File.new(filename, 'rb')), authorization: @api_header) do |response, _request, result|
         if result.code.to_i == 200
           response = JSON.parse(response, symbolize_names: true)
-          return Property.from_hash(response[:state])
+          return Property.from_hash(response[:data][:property_view][:state])
         else
           return false, response
         end
@@ -263,11 +264,11 @@ module Seed
     # will not copy over all the existing measures, scenarios, etc. #TODO: Need to adddress this
     def update_analysis_state(property_id, analysis_state)
       payload = {
-          state: {
-              analysis_state: analysis_state
-          }
+        state: {
+          analysis_state: analysis_state
+        }
       }
-      uri = URI.escape("#{@host}/v2.1/properties/#{property_id}/?cycle_id=#{@cycle_obj.id}&organization_id=#{@organization.id}")
+      uri = URI.escape("#{@host}/v2/properties/#{property_id}/?cycle_id=#{@cycle_obj.id}&organization_id=#{@organization.id}")
       RestClient.put(uri, payload.to_json, authorization: @api_header, content_type: :json) do |response, _request, result|
         if result.code.to_i == 200
           response = JSON.parse(response, symbolize_names: true)
