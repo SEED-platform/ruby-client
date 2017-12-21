@@ -63,7 +63,7 @@ module Seed
     # }
     def self.from_hash(hash)
       search_results = SearchResults.new
-      vars_to_parse = %i[status properties]
+      vars_to_parse = %i[status properties results]
 
       hash.each do |name, value|
         if vars_to_parse.include? name
