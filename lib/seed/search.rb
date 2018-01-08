@@ -1,5 +1,7 @@
 module Seed
   class SearchResults
+    attr_accessor :properties
+
     # @param hash, form of
     # {
     #   "status": "success",
@@ -12,7 +14,7 @@ module Seed
     #     "has_previous": false,
     #     "total": 5
     #   },
-    #   "properties": [
+    #   "results": [
     #     {
     #         "id": 2070,
     #         "property_id": 2070,
@@ -62,13 +64,18 @@ module Seed
     #     ]
     # }
     def self.from_hash(hash)
+      pp hash
       search_results = SearchResults.new
-      vars_to_parse = %i[status properties results]
+      vars_to_parse = %i[status results]
 
       hash.each do |name, value|
         if vars_to_parse.include? name
-          search_results.instance_variable_set("@#{name}", value)
-          search_results.class.__send__(:attr_accessor, name)
+          if name == :results
+            search_results.properties = value
+          else
+            search_results.instance_variable_set("@#{name}", value)
+            search_results.class.__send__(:attr_accessor, name)
+          end
         end
       end
 

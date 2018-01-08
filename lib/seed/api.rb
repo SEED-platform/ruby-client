@@ -241,17 +241,16 @@ module Seed
     end
 
     # update the property
-    def update_property_by_buildingfile(property_id, filename, analysis_state = nil)
+    def update_property_by_buildingfile(property_id, filename)
       payload = {
         multipart: true,
-        file_type: 1,
-        state: {}
+        file_type: 1
       }
-      payload[:state][:analysis_state] = analysis_state if analysis_state
 
       uri = URI.escape("#{@host}/v2.1/properties/#{property_id}/update_with_building_sync/?cycle_id=#{@cycle_obj.id}&organization_id=#{@organization.id}")
       RestClient.put(uri, payload.merge(file: File.new(filename, 'rb')), authorization: @api_header) do |response, _request, result|
         if result.code.to_i == 200
+          # return the updated property
           response = JSON.parse(response, symbolize_names: true)
           return Property.from_hash(response[:data][:property_view][:state])
         else
