@@ -64,7 +64,6 @@ module Seed
     #     ]
     # }
     def self.from_hash(hash)
-      pp hash
       search_results = SearchResults.new
       vars_to_parse = %i[status results]
 
