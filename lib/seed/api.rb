@@ -272,7 +272,7 @@ module Seed
         if result.code.to_i == 200
           response = JSON.parse(response, symbolize_names: true)
           return True, Property.from_hash(response[:state])
-        elsif result.code.to_i = 204
+        elsif result.code.to_i == 204
           response = JSON.parse(response, symbolize_names: true)
           return True, response
         elsif result.code.to_i == 422
