@@ -271,7 +271,10 @@ module Seed
       RestClient.put(uri, payload.to_json, authorization: @api_header, content_type: :json) do |response, _request, result|
         if result.code.to_i == 200
           response = JSON.parse(response, symbolize_names: true)
-          return Property.from_hash(response[:state])
+          return True, Property.from_hash(response[:state])
+        elsif result.code.to_i = 204
+          response = JSON.parse(response, symbolize_names: true)
+          return True, response
         elsif result.code.to_i == 422
           return false, response
         else
