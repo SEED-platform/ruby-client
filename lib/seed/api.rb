@@ -229,7 +229,7 @@ module Seed
     def search(identifier_string, analysis_state, per_page = 25)
       identifier_string = '' if identifier_string.nil?
       analysis_state = '' if analysis_state.nil?
-      uri = URI.escape("#{@host}/v2/properties/?cycle=#{@cycle_obj.id}&organization_id=#{@organization.id}&identifier=#{identifier_string}&analysis_state=#{analysis_state}&per_page=#{per_page}")
+      uri = URI.escape("#{@host}/v2.1/properties/?cycle=#{@cycle_obj.id}&organization_id=#{@organization.id}&identifier=#{identifier_string}&analysis_state=#{analysis_state}&per_page=#{per_page}")
       response = RestClient.get(uri, authorization: @api_header)
 
       if response.code == 200
