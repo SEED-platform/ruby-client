@@ -65,8 +65,9 @@ module Seed
     # }
     def self.from_hash(hash)
       search_results = SearchResults.new
-      vars_to_parse = %i[status results]
+      vars_to_parse = %i[status results properties]
 
+      # DLM: response does not include 'results', now this is just 'properties'
       hash.each do |name, value|
         if vars_to_parse.include? name
           if name == :results
