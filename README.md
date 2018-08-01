@@ -1,6 +1,6 @@
 # SEED Ruby Client
 
-[![CircleCI](https://circleci.com/gh/SEED-platform/ruby-client.svg?style=svg)](https://circleci.com/gh/SEED-platform/ruby-client)
+[![Build Status](https://travis-ci.org/SEED-platform/ruby-client.svg?branch=develop)](https://travis-ci.org/SEED-platform/ruby-client)
 
 ## Installation
 
