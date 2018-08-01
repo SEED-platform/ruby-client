@@ -2,7 +2,7 @@ module Seed
   class Property
     def self.from_hash(hash)
       property = Property.new
-      vars_to_parse = %i[name start end id]
+      vars_to_parse = [:name, :start, :end, :id]
 
       hash.each do |name, value|
         if vars_to_parse.include? name

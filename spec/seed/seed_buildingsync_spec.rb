@@ -18,7 +18,7 @@ RSpec.describe Seed do
 
       expect(response[0]).to eq true
       expect(response[1][:status]).to eq 'success'
-      expect(response[1][:data][:property_view][:state][:gross_floor_area]).to eq 69_452.0
+      expect(response[1][:data][:property_view][:state][:gross_floor_area]).to eq 69452.0
     end
 
     it 'should fail on a malformed buildingsync file' do
@@ -27,8 +27,8 @@ RSpec.describe Seed do
 
       expect(response[0]).to eq false
       expect(response[1][:status]).to eq 'error'
-      expect(response[1][:message]).to include "Could not find required value for sub-lookup of n1:IdentifierLabel:Assessor parcel number"
-      expect(response[1][:message]).to include "Could not find required value for sub-lookup of n1:FloorAreaType:Gross"
+      expect(response[1][:message]).to include 'Could not find required value for sub-lookup of n1:IdentifierLabel:Assessor parcel number'
+      expect(response[1][:message]).to include 'Could not find required value for sub-lookup of n1:FloorAreaType:Gross'
     end
 
     it 'should list buildingsync files on property' do
