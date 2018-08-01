@@ -12,3 +12,4 @@
 # rspec failure tracking
 .rspec_status
 seed.json
+.rubocop-http*

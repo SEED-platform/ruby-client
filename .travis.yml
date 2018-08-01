@@ -1,0 +1,34 @@
+sudo: required
+dist: trusty
+cache:
+  directories:
+    - node_modules
+    - seed/static/vendors/bower_components
+    - "$HOME/.pip-cache/"
+    - "$HOME/.nvm"
+    - ".tox"
+language: ruby
+rvm: 2.2.4
+services:
+  - docker
+env:
+  global:
+    - DOCKER_COMPOSE_VERSION=1.22.0
+before_install:
+  - sudo rm /usr/local/bin/docker-compose
+  - curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose
+  - chmod +x docker-compose
+  - sudo mv docker-compose /usr/local/bin
+jobs:
+  include:
+    - stage: test
+      before_script:
+        - docker images --all
+        - docker --version
+        - docker-compose --version
+        - docker-compose -f ./spec/docker/seed-docker-compose.yml build --pull
+      script:
+        - docker-compose -f ./spec/docker/seed-docker-compose.yml up -d
+        # Wait until seed is up and running by running curl
+        - curl --retry 18 --retry-delay 10 -v http://localhost
+#        - docker-compose -f ./spec/docker/seed-docker-compose.yml run web ./manage.py create_test_user_json --username user@seed-platform.org --host http://web > seed.json
