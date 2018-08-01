@@ -53,12 +53,6 @@ services:
       - web
     volumes:
       - seed_media:/seed/media
-  test_container:
-    build:
-      context: ../..
-      dockerfile: spec/docker/Dockerfile
-    links:
-      - web
 volumes:
   seed_pgdata:
     external: true
