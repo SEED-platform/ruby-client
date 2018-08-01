@@ -232,7 +232,6 @@ module Seed
       uri = URI.escape("#{@host}/v2.1/properties/?cycle=#{@cycle_obj.id}&organization_id=#{@organization.id}&identifier=#{identifier_string}&analysis_state=#{analysis_state}&per_page=#{per_page}")
       response = RestClient.get(uri, authorization: @api_header)
 
-      puts response
       if response.code == 200
         response = JSON.parse(response, symbolize_names: true)
         return SearchResults.from_hash(response)

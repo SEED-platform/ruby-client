@@ -74,7 +74,8 @@ RSpec.describe Seed do
 
       # test searching by analysis_state
       search_results = @r.search(nil, 'Not Started')
-      puts search_results.properties
+      expect(search_results.properties.size).to be >= 1
+      # puts search_results.properties
     end
   end
 end
