@@ -139,6 +139,26 @@ module Seed
       false
     end
 
+    def profiles(bypass_cache = false)
+      return @cache[:profiles] if @cache[:profiles] && !bypass_cache
+
+      @cache[:profiles] = []
+      response = RestClient.get(
+        "#{@host}/v2/column_list_settings/?organization_id=#{@organization.id}",
+        authorization: @api_header
+      )
+      if response.code == 200
+        profiles = []
+        response = JSON.parse(response, symbolize_names: true)
+        response[:data].each do |profile|
+          profiles << Profile.from_hash(profile)
+        end
+        @cache[:profiles] = profiles
+      else
+        return false
+      end
+    end
+
     # upload a buildingsync file
     # returns status and response information
     def upload_buildingsync(filename)
@@ -239,7 +259,23 @@ module Seed
         return false
       end
     end
+    
+    # Return properties filtered by filter_id
+    # @param profile_id, string
+    def filter(profile_id, per_page = 25)
 
+      uri = URI.escape("#{@host}/v2/properties/filter/?cycle=#{@cycle_obj.id}&organization_id=#{@organization.id}&per_page=#{per_page}")
+      payload = {profile_id: profile_id}
+      response = RestClient.post(uri, payload, authorization: @api_header)
+    
+      if response.code == 200
+        response = JSON.parse(response, symbolize_names: true)
+        return SearchResults.from_hash(response)
+      else
+        return false
+      end
+    end
+    
     # update the property
     def update_property_by_buildingfile(property_id, filename)
       payload = {
