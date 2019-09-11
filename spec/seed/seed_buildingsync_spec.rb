@@ -5,7 +5,6 @@ require 'date'
 RSpec.describe Seed do
   describe 'BuildingSync' do
     before :example do
-      # @r = Seed::API.new("https://seed-platform.org")
       host = ENV['BRICR_SEED_HOST'] || 'http://localhost:8000'
       @r = Seed::API.new(host)
       @r.get_or_create_organization('Cycle Test')
@@ -18,7 +17,7 @@ RSpec.describe Seed do
 
       expect(response[0]).to eq true
       expect(response[1][:status]).to eq 'success'
-      expect(response[1][:data][:property_view][:state][:gross_floor_area]).to eq 69452.0
+      expect(response[1][:data][:property_view][:state][:gross_floor_area]).to eq 77579.0
     end
 
     it 'should fail on a malformed buildingsync file' do
@@ -27,8 +26,7 @@ RSpec.describe Seed do
 
       expect(response[0]).to eq false
       expect(response[1][:status]).to eq 'error'
-      expect(response[1][:message]).to include 'Could not find required value for sub-lookup of n1:IdentifierLabel:Assessor parcel number'
-      expect(response[1][:message]).to include 'Could not find required value for sub-lookup of n1:FloorAreaType:Gross'
+      expect(response[1][:message][:errors]).to include 'Could not find required value for sub-lookup of auc:FloorAreaType:Gross'
     end
 
     it 'should list buildingsync files on property' do

@@ -44,9 +44,9 @@ RSpec.describe Seed do
       @r.cycles
       cycles = @r.cycles
       expect(cycles.size).to eq 1
-      expect(cycles.first.name).to eq '2017 Calendar Year'
-      expect(cycles.first.start).to eq DateTime.parse('2017-01-01T08:00:00Z')
-      expect(cycles.first.end).to eq DateTime.parse('2018-01-01T08:00:00Z')
+      expect(cycles.first.name).to eq '2018 Calendar Year'
+      expect(cycles.first.start.strftime('%m/%d/%Y')).to eq '12/31/2017'
+      expect(cycles.first.end.strftime('%m/%d/%Y')).to eq '12/31/2018'
     end
 
     it 'should create a new cycle' do
@@ -62,8 +62,8 @@ RSpec.describe Seed do
 
     it 'should return existing cycle' do
       @r.get_or_create_organization('Cycle Test')
-      cycle = @r.cycle('2017 Calendar Year')
-      expect(cycle.name).to eq '2017 Calendar Year'
+      cycle = @r.cycle('2018 Calendar Year')
+      expect(cycle.name).to eq '2018 Calendar Year'
     end
 
     it 'should not find buildingsync file' do
