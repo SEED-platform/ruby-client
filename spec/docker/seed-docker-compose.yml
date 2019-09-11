@@ -44,7 +44,7 @@ services:
     image: seedplatform/seed:bricr-dev
     environment:
       - POSTGRES_DB=seed
-      - - POSTGRES_PORT=5432
+      - POSTGRES_PORT=5432
       - POSTGRES_USER=seed
       - POSTGRES_PASSWORD=password
       - SECRET_KEY=abcdefghijklmnopqrstuvwxyz
