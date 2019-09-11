@@ -19,11 +19,12 @@ services:
     volumes:
       - seed_pgdata:/var/lib/postgresql/data
   db-redis:
-    image: redis
+    image: redis:5.0.1
   web:
     image: seedplatform/seed:bricr-dev
     environment:
       - POSTGRES_DB=seed
+      - POSTGRES_PORT=5432
       - POSTGRES_USER=seed
       - POSTGRES_PASSWORD=password
       - SEED_ADMIN_USER=user@seed-platform.org
@@ -43,6 +44,7 @@ services:
     image: seedplatform/seed:bricr-dev
     environment:
       - POSTGRES_DB=seed
+      - - POSTGRES_PORT=5432
       - POSTGRES_USER=seed
       - POSTGRES_PASSWORD=password
       - SECRET_KEY=abcdefghijklmnopqrstuvwxyz
