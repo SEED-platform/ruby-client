@@ -16,8 +16,9 @@ services:
       - POSTGRES_DB=seed
       - POSTGRES_USER=seed
       - POSTGRES_PASSWORD=password
-    volumes:
-      - seed_pgdata:/var/lib/postgresql/data
+#    Don't use common db. This eases local development/testing.
+#    volumes:
+#      - seed_pgdata:/var/lib/postgresql/data
   db-redis:
     image: redis:5.0.1
   web:
