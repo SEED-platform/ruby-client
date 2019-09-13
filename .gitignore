@@ -8,9 +8,10 @@
 /pkg/
 /spec/reports/
 /tmp/
+/gems/
 
 # rspec failure tracking
 .rspec_status
-seed.json
 .rubocop-http*
-
+.ruby-version
+seed.json

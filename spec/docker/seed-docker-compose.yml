@@ -11,19 +11,21 @@
 version: '3'
 services:
   db-postgres:
-    image: postgres
+    image: seedplatform/postgres-seed:11.2
     environment:
       - POSTGRES_DB=seed
       - POSTGRES_USER=seed
       - POSTGRES_PASSWORD=password
-    volumes:
-      - seed_pgdata:/var/lib/postgresql/data
+#    Don't use common db. This eases local development/testing.
+#    volumes:
+#      - seed_pgdata:/var/lib/postgresql/data
   db-redis:
-    image: redis
+    image: redis:5.0.1
   web:
-    image: seedplatform/seed:bricr
+    image: seedplatform/seed:bricr-dev
     environment:
       - POSTGRES_DB=seed
+      - POSTGRES_PORT=5432
       - POSTGRES_USER=seed
       - POSTGRES_PASSWORD=password
       - SEED_ADMIN_USER=user@seed-platform.org
@@ -40,9 +42,10 @@ services:
       - "80:80"
   web-celery:
     command: /seed/docker/start_celery_docker.sh
-    image: seedplatform/seed:bricr
+    image: seedplatform/seed:bricr-dev
     environment:
       - POSTGRES_DB=seed
+      - POSTGRES_PORT=5432
       - POSTGRES_USER=seed
       - POSTGRES_PASSWORD=password
       - SECRET_KEY=abcdefghijklmnopqrstuvwxyz
