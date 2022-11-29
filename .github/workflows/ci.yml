@@ -24,9 +24,9 @@ jobs:
           printenv
           docker volume create --name=pyseed_media
           # verify that the stack wasn't cached
-          docker-compose -f tests/integration/docker-compose.yml stop
-          docker-compose -f tests/integration/docker-compose.yml rm -f
-          docker-compose -f tests/integration/docker-compose.yml up -d
+          docker-compose -f spec/docker/seed-docker-compose.yml stop
+          docker-compose -f spec/docker/seed-docker-compose.yml rm -f
+          docker-compose -f spec/docker/seed-docker-compose.yml up -d
       - name: Wait for web server
         uses: nev7n/wait_for_response@v1
         with:
