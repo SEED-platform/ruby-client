@@ -43,8 +43,6 @@ services:
     depends_on:
       - db-redis
       - db-postgres
-    volumes:
-      - pyseed_media:/seed/media
     ports:
       - "8000:80"
     logging:
