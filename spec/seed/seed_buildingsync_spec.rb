@@ -24,9 +24,9 @@ RSpec.describe Seed do
       filename = File.expand_path('../files/buildingsync_ex01_malformed.xml', File.dirname(__FILE__))
       response = @r.upload_buildingsync(filename)
 
-      expect(response[0]).to eq false
-      expect(response[1][:status]).to eq 'error'
-      expect(response[1][:message][:errors]).to include 'Could not find required value for sub-lookup of auc:FloorAreaType:Gross'
+      expect(response[0]).to eq true
+      expect(response[1][:message][:warnings][0]).to include 'Skipped meter Resource1 because it had no valid readings'
+      expect(response[1][:data][:property_view][:state][:gross_floor_area]).to eq nil
     end
 
     it 'should list buildingsync files on property' do

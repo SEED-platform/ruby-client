@@ -41,8 +41,8 @@ jobs:
         uses: jwalton/gh-docker-logs@v1
       - name: Extract API credentials from SEED docker instance
         run: |
-          docker exec seed_web ./manage.py create_test_user_json --username user@seed-platform.org --host http://localhost:8000 --pyseed > seed-config.json
-          cat seed-config.json
+          docker exec seed_web ./manage.py create_test_user_json --username user@seed-platform.org --host http://localhost:8000 --pyseed > seed.json
+          cat seed.json
       - name: Run tests with bundle/rspec
         run: |
           bundle exec rake
