@@ -1,6 +1,6 @@
 # SEED Ruby Client
 
-[![Build Status](https://travis-ci.org/SEED-platform/ruby-client.svg?branch=develop)](https://travis-ci.org/SEED-platform/ruby-client)
+[![Build Status](https://github.com/seed-platform/ruby-client/actions/workflows/ci.yml/badge.svg)](https://github.com/seed-platform/ruby-client/actions/workflows/ci.yml/badge.svg?branch=develop)
 
 ## Installation
 
