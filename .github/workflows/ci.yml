@@ -44,7 +44,7 @@ jobs:
           docker exec seed_web ./manage.py create_test_user_json --username user@seed-platform.org --host http://localhost:8000 > seed-config.json
       - name: Run tests with bundle/rspec
         run: |
-          - bundle exec rake
+          bundle exec rake
       - name: Dump docker logs on failure
         if: failure()
         uses: jwalton/gh-docker-logs@v1
