@@ -5,29 +5,6 @@ on:
   push:
 
 jobs:
-  test:
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ubuntu-latest]
-        python-version: [3.7, 3.9]
-        test_env: [python, precommit, mypy]
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v2
-        with:
-          python-version: ${{ matrix.python-version }}
-      - name: Display system info
-        run: |
-          python -c "import sys; print(sys.version)"
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          python -m pip install tox tox-gh-actions
-      - name: Test with tox
-        run: tox -e ${{ matrix.test_env }}
   integration-tests:
     name: Run integration tests
     runs-on: ubuntu-latest
@@ -65,7 +42,7 @@ jobs:
       - name: Extract API credentials from SEED docker instance
         run: |
           docker exec seed_web ./manage.py create_test_user_json --username user@seed-platform.org --host http://localhost:8000 > seed-config.json
-      - name: Run tests with pytest
+      - name: Run tests with bundle/rspec
         run: |
           - bundle exec rake
       - name: Dump docker logs on failure
