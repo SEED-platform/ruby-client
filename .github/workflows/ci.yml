@@ -1,0 +1,51 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+
+jobs:
+  integration-tests:
+    name: Run integration tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Install Ruby
+        uses: actions/setup-ruby@v1
+        with:
+          ruby-version: "2.5"
+      - name: Install dependencies
+        run: |
+          gem install bundler
+          bundle install
+      - name: Build and run stack
+        run: |
+          printenv
+          # verify that the stack wasn't cached
+          docker-compose -f spec/docker/seed-docker-compose.yml stop
+          docker-compose -f spec/docker/seed-docker-compose.yml rm -f
+          docker-compose -f spec/docker/seed-docker-compose.yml up -d
+      - name: Wait for web server
+        uses: nev7n/wait_for_response@v1
+        with:
+          url: "http://localhost:8000/"
+          responseCode: 200
+          timeout: 120000
+          interval: 2000
+      - name: Wait another 30s
+        uses: jakejarvis/wait-action@master
+        with:
+          time: "30s"
+      - name: Dump docker logs before tests
+        uses: jwalton/gh-docker-logs@v1
+      - name: Extract API credentials from SEED docker instance
+        run: |
+          docker exec seed_web ./manage.py create_test_user_json --username user@seed-platform.org --host http://localhost:8000 --pyseed > seed.json
+          cat seed.json
+      - name: Run tests with bundle/rspec
+        run: |
+          bundle exec rake
+      - name: Dump docker logs on failure
+        if: failure()
+        uses: jwalton/gh-docker-logs@v1
